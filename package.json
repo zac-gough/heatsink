@@ -1,16 +1,26 @@
 {
   "name": "heatsink",
   "version": "1.0.0",
-  "description": "",
-  "main": "game.js",
+  "type": "module",
+  "description": "game",
+  "main": "index.js",
   "dependencies": {
-    "phaser": "^3.52.0"
+    "phaser": "^3.52.0",
+    "phaser3-rex-plugins": "^1.1.39"
   },
   "devDependencies": {},
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
-  "author": "",
-  "license": "ISC"
+  "author": "zac gough",
+  "license": "UNLICENSED",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zaccyboy101/heatsink.git"
+  },
+  "bugs": {
+    "url": "https://github.com/zaccyboy101/heatsink/issues"
+  },
+  "homepage": "https://github.com/zaccyboy101/heatsink#readme"
 }
