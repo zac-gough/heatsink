@@ -1,7 +1,7 @@
 import { BASESPEED, SPAWNCOOLDOWN, SPEEDMODIFIER, STAGELENGTH, WIDTH, HEIGHT } from '../constants/config.js';
 import Player from '../objects/player.js';
 import Obstacle from '../objects/obstacles.js';
-import { SKY, CLOUD, MOUNTAIN, PINE1, PINE2, PLATFORM, BASEPLATFORM, PLAYER_IMAGE, OBSTACLE_1, OBSTACLE_2, OBSTACLE_3, OBSTACLE_4, BUTTON} from '../constants/assets.js';
+import { SKY, CLOUD, PLATFORM, BASEPLATFORM, OBSTACLE_1, OBSTACLE_2, OBSTACLE_3, OBSTACLE_4, OBSTACLE_5, BUTTON} from '../constants/assets.js';
 import {getRandomFour, getRandomHundred} from '../utilities/functions.js';
 
 //Global Vars
@@ -9,48 +9,43 @@ import {getRandomFour, getRandomHundred} from '../utilities/functions.js';
 var platforms;
 var skyTile;
 var cloudTile;
-var mountainTile;
-var pineTile1;
-var pineTile2;
 var floorTile;
 var cursors;
 var obstacleInstance;
 //Main loop var
 var active = false;
-//Var to only allow one click of play button
-
 var tiles = [];
+var spawned = false;
+var collisionTime = 0;
 
 class GameScene extends Phaser.Scene {
-    constructor(key) {
-        super({ key });
-            this.key = key;
-            this.player = null;
-            this.speed = BASESPEED;
-            this.speedModifier = SPEEDMODIFIER;
-            this.stageLength = STAGELENGTH;
-            this.lastStage = 0;
-            this.obstacleVelocity = -200;
-            this.spawnCooldown = SPAWNCOOLDOWN;
-            this.spawnTimer = 0;
-            this.elapsed = 0;
-            this.timeOfLastSpawn = 0;
-            this.button = null;
-            this.obstacleGroup = null;
+    constructor() {
+        super('gameScene');     
+            
+            
+            
     };
+
+    init(data) {
+        this.dataPush = data;
+        this.playerSelect = data.playerSelect;
+        this.collided = false;
+        this.player = 0;
+        this.speed = BASESPEED;
+        this.speedModifier = SPEEDMODIFIER;
+        this.stageLength = STAGELENGTH;
+        this.lastStage = 0;
+        this.obstacleVelocity = -200;
+        this.spawnCooldown = SPAWNCOOLDOWN;
+        this.spawnTimer = 0;
+        this.elapsed = 0;
+        this.timeOfLastSpawn = 0;
+        this.button = null;
+        this.obstacleGroup = null;
+        this.nextCheck = 0;
+    };
+
    
-    //Updates 'playing' property to false
-    endGame() {
-        active = false;
-    };
-    //Gives each tilesprite a speed property
-    createSpeedProperty() {
-        var base_modifier = 1;
-        for (var i of tiles) {
-            i.scrollSpeed = this.speed * base_modifier;
-            base_modifier += 3;
-        }
-    };
     //Updates the speed values for each tile when the level progresses
     updateSpeeds() {
         var base_modifier = 1;
@@ -66,6 +61,16 @@ class GameScene extends Phaser.Scene {
             i.setActive(true);
         }
     };
+
+    //Gives each tilesprite a speed property
+    createSpeedProperty() {
+        var base_modifier = 1;
+        for (var i of tiles) {
+            i.scrollSpeed = this.speed * base_modifier;
+            base_modifier += 3;
+        }
+    };
+
     //Scrolls the tilesprites
     moveTiles() {
         for (var i of tiles) {
@@ -81,7 +86,7 @@ class GameScene extends Phaser.Scene {
 
     //Updates the timer values
     checkTime() {
-
+        this.nextCheck = Math.floor(this.elapsed) + 1;
         this.elapsed = (Date.now() - this.startTime)/1000;
         this.spawnTimer = (Date.now() - this.timeOfLastSpawn)/1000;
 
@@ -92,7 +97,6 @@ class GameScene extends Phaser.Scene {
 
         if (this.elapsed - this.lastStage >= this.stageLength) {
             this.speed = this.speed * this.speedModifier;
-            this.obstacleGroup.setVelocityX(this.obstacleVelocity * this.speedModifier);
             this.lastStage += this.stageLength;
             this.data.set('Level', this.data.get('Level') + 1);
             if (this.data.get('Level') % 3 == 0){
@@ -109,9 +113,20 @@ class GameScene extends Phaser.Scene {
         this.data.set('Score', Math.round(this.elapsed*100));
         this.scoreText.setText([
             'Score: ' + this.data.get('Score'),
-            'Level: ' + this.data.get('Level')
-        ]);
+/*             'Level: ' + this.data.get('Level')
+ */        ]);
     };
+
+    //Has it been a second? Spawn chance if so
+    spawnCheck() {
+        var elapsed = Math.floor(this.elapsed);
+        if (elapsed == this.nextCheck) {
+            return true
+        } else {
+            return false
+        };
+
+    }
 
     //Calculates the probability of an obstacle spawning
     getChance() {
@@ -121,12 +136,19 @@ class GameScene extends Phaser.Scene {
     };
 
     //Spawns an obstacle, takes key and frame value as args
-    spawnObstacle(name, frames) {
-        obstacleInstance = new Obstacle(this, WIDTH, HEIGHT-40, name);
-        obstacleInstance.initAnims(name, 0, frames, 20, -1);
+    spawnObstacle(name, frames, isAnimated) {
+        obstacleInstance = new Obstacle(this, WIDTH-20, HEIGHT/1.4, name, isAnimated);
+        if (isAnimated == true) {
+            obstacleInstance.initAnims(0, frames, 20, -1);
+        }
+        
         obstacleInstance.spawn();
+        //Temporary fix for oversized transit
+        if (name != 'obstacle1') {
+            obstacleInstance.setScale(.9);
+        }
         this.physics.add.collider(obstacleInstance, platforms);
-        //this.obstacleGroup.add(obstacleInstance);
+        this.nextCheck = this.elapsed + 1;
     };
 
     //Updates the time that an obstacle was last spawned
@@ -135,33 +157,35 @@ class GameScene extends Phaser.Scene {
         console.log('done')
     };
 
+    //Spawn player at start
+    spawnPlayer() {
+        this.player = null;
+        this.player = new Player(this, 50, HEIGHT/2, this.playerSelect);
+        this.add.existing(this.player);
+        this.physics.add.existing(this.player);
+        this.physics.add.collider(this.player, platforms);
+        this.player.body.setGravityY(500);
+        this.player.body.setVelocityX(0);
+        this.player.setCollideWorldBounds(true);
+        this.player.initAnims();
+        console.log(this.player.texture)
+        this.player.setActive(true);
+        this.player.anims.play('run', true);
+    }
+
+    //Updates 'playing' property to false
+    endGame() {
+        active = false;
+    };
+
     preload() {
     
-        //Button
-        this.load.image('button', BUTTON);
-        //Background
-        this.load.image('sky', SKY.image);
-        this.load.image('cloud', CLOUD.image);
-        this.load.image('mountain', MOUNTAIN.image);
-        this.load.image('pine1', PINE1.image);
-        this.load.image('pine2', PINE2.image);
-        this.load.image('platform', PLATFORM.image);
 
-        //Platforms
-        this.load.image('baseplatform', BASEPLATFORM);
-
-        //Player
-        this.load.spritesheet('player', PLAYER_IMAGE, { frameWidth: 50, frameHeight: 37});
-
-        //Obstacles
-        this.load.spritesheet('obstacle1', OBSTACLE_1.path, {frameWidth: OBSTACLE_1.width, frameHeight: OBSTACLE_1.height});
-        this.load.spritesheet('obstacle2', OBSTACLE_2.path, {frameWidth: OBSTACLE_2.width, frameHeight: OBSTACLE_2.width});
-        this.load.spritesheet('obstacle3', OBSTACLE_3.path, {frameWidth: OBSTACLE_3.width, frameHeight: OBSTACLE_3.width});
-        this.load.spritesheet('obstacle4', OBSTACLE_4.path, {frameWidth: OBSTACLE_4.width, frameHeight: OBSTACLE_4.width});
     };
 
     create() {
 
+        console.log('Game Scene started!');
         //Add Base Platform 
         platforms = this.physics.add.staticGroup();
         platforms.create(WIDTH/2, HEIGHT, 'baseplatform').refreshBody();
@@ -169,107 +193,104 @@ class GameScene extends Phaser.Scene {
         //Add Backgrounds
         skyTile = this.add.tileSprite(SKY.xPosition, SKY.yPosition, SKY.width, SKY.height, 'sky');
         cloudTile = this.add.tileSprite(CLOUD.xPosition, CLOUD.yPosition, CLOUD.width, CLOUD.height, 'cloud');
-        mountainTile = this.add.tileSprite(MOUNTAIN.xPosition, MOUNTAIN.yPosition, MOUNTAIN.width, MOUNTAIN.height, 'mountain');
-        pineTile1 = this.add.tileSprite(PINE1.xPosition, PINE1.yPosition, PINE1.width, PINE1.height, 'pine1');
-        pineTile2 = this.add.tileSprite(PINE2.xPosition, PINE2.yPosition, PINE2.width, PINE2.height, 'pine2');
         floorTile = this.add.tileSprite(PLATFORM.xPosition, PLATFORM.yPosition, PLATFORM.width, PLATFORM.height, 'platform');
-        tiles.push(skyTile, cloudTile, mountainTile, pineTile1, pineTile2, floorTile);
+        tiles.push(skyTile, cloudTile, floorTile);
         
         this.createSpeedProperty();
         this.fixToCamera();
-
-        console.log(this.stageLength)
 
         //Create Score
 
         this.initScore();
 
-        this.scoreText = this.add.text(10, 10, '', {font: '28px Courier', fill: '#00ff00'});
+        this.scoreText = this.add.text(10, 10, '', {font: '28px Courier', fill: '#FF1493'});
 
         //Spawn Player
-
-        this.player = new Player(this, 50, HEIGHT/2, 'player');
-        this.physics.add.collider(this.player, platforms);
-        this.player.initAnims();
-        this.player.setActive(true);
-
+        this.spawnPlayer();
         cursors = this.input.keyboard.createCursorKeys();
+        this.startTime = Date.now();
+        this.timeOfLastSpawn = Date.now();
+        console.log(this.player.texture.key);
+        console.log(this.playerSelect);
+        
 
-        //Add Group for Obstacles
-
-        this.obstacleGroup = new Phaser.Physics.Arcade.Group(this.physics.world, this);
-
-        //Add The Start Button
-        this.button = this.add.image(WIDTH/2, HEIGHT/2, 'button');
-        this.button.setInteractive();
     };
 
     update() {
-        //Waits for Player to Start game
-        if (active == false) {
 
-            this.moveTiles();
-            this.button.once('pointerdown', () => {
-                this.startTime = Date.now();
-                this.timeOfLastSpawn = Date.now();
-                this.button.visible = false;
-                active = true;
-            });
-
-        } else if (active == true) {
-            
+        if (this.collided == false) {
             this.moveTiles();
             this.checkTime();
             //Check for Spawn and if true spawn random obstacle
 
-            var chanceToSpawn = this.getChance();
-            var randomInt = getRandomHundred();
+            var spawnCheck = this.spawnCheck();
+            if (spawnCheck == true){
+                var chanceToSpawn = this.getChance();
+                var randomInt = getRandomHundred();
+                console.log(randomInt);
 
-            if (chanceToSpawn >= randomInt) {
+                if (chanceToSpawn >= randomInt) {
 
-                var randomObstacleID = getRandomFour();
-                this.setTimeofSpawn();
+                    var randomObstacleID = getRandomFour();
+                    this.setTimeofSpawn();
 
-                if (randomObstacleID == 1) {
-                    this.spawnObstacle(OBSTACLE_1.name, OBSTACLE_1.frames);
-                } else if (randomObstacleID == 2){
-                    this.spawnObstacle(OBSTACLE_2.name, OBSTACLE_2.frames);
-                } else if (randomObstacleID == 3) {
-                    this.spawnObstacle(OBSTACLE_3.name, OBSTACLE_3.frames);
-                } else {
-                    this.spawnObstacle(OBSTACLE_4.name, OBSTACLE_4.frames);
-                    }
-                };
+                    if (randomObstacleID == 1) {
+                        this.spawnObstacle('obstacle1', 2, true);
+                    } else if (randomObstacleID == 2){
+                        this.spawnObstacle('obstacle2', 5, true);
+                    } else if (randomObstacleID == 3) {
+                        this.spawnObstacle('obstacle3', 0, false);
+                    } else {
+                        this.spawnObstacle('obstacle4', 0, false);
+                        }
+                    };
+                }
+            
 
-            //Player Movement
+            //Player Movement            
             if (cursors.up.isDown && this.player.body.touching.down) {
 
-                this.player.setVelocityY(-230);
-                this.player.anims.play('jump', true); 
-            
-            } else if (cursors.down.isDown && this.player.body.touching.down){
-
-                this.player.anims.play('slide', true);
-        
-            } else {
-        
-                if (this.player.body.touching.down) {
-        
-                    this.player.anims.play('run', true);
-                }   
-            };
+                this.player.setVelocityY(-300);
+            }
             
             this.updateStage();
             this.updateSpeeds();
             this.updateText();
             this.physics.add.collider(this.player, obstacleInstance, () => {
-                this.initScore();
-                this.button.visible = true;
-                this.obstacleGroup.destroy();
-                active = false;
+
+                this.physics.pause();
+                this.collidedInstance = obstacleInstance;
+                this.collided = true;
+                this.speed = 0;
+                this.obstacleVelocity = 0;
+                this.player.anims.pause();
+                collisionTime = Date.now();
             });
+
+        } else if (this.collided == true)   {
+            
+            this.player.anims.pause();
+            this.player.setTint(0xff0000);
+            this.collidedInstance.setTint(0xff0000);
+            this.tweens.add({
+                targets: [this.player, this.collidedInstance],
+                alpha: 0,
+                duration: 3000,
+                repeat: -1,
+                yoyo: true
+              })
+
+            if ((Date.now() - collisionTime)/1000 > 3) {
+                this.scene.start('gameOver');
         }
-    };
+      }
+    }
 }
+            
+            
+/*             this.initScore();
+ */        
+        
+
 
 export default GameScene;

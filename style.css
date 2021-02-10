@@ -11,42 +11,71 @@
 
 
 body {
-    background-color:whitesmoke;
     width: 100%;
     height: 100%;
+    background-color: #c2b6b6;
+    background-image: linear-gradient(315deg, #c2b6b6 0%, #576574 74%);
+    background-repeat: no-repeat;
+    background-attachment: fixed;
 }
 
 .header {
     width: 100%;
     height: 80px;
     display: block;
-    background-color: rgb(60, 61, 60);
 }   
 
-
-.logo-container {
-    display: table;
-    float: left;
-    background-image: url("/assets/website-images/slimset-imbi.png");
-
-}
-
-.button-group button{
-    background-color: rgb(204, 204, 102);
-    border: 1px solid rgb(204, 204, 102);
-    color: white;
-    padding: 10px 24px;
-    cursor: pointer;
-    width: 50%;
+#footer{
+    position: fixed;
+    width: 100%;
+    height: 50px;
+    left: 0;
+    bottom: 0;
+    text-align: center;
+    line-height: 50px;
     display: block;
-    transition-duration: 1s;
+    
 }
 
-.button-group button:hover {
-    background-color:whitesmoke;
+/* .logo-container {
+    display: table;
+    float: center;
+    background-image: url("/assets/website-images/slimset-imbi.png");
+} */
+
+#heatsink-logo {
+    float: left;
+    width: 400px;
+    margin-left: 20px;
+    margin-top: 5px;
 }
 
-.game {
-    padding: 100px;
+#artist-logo {
+    margin-top: 20px;
+    float: right;
+}
+
+#game {
+    width: 800px;
+    height: 300px;
+    margin: 0 auto;
+    margin-top: 100px;
+}
+
+#cover-art{
+    padding-top: 5%;
+    padding-right: 15%;
+    width: 500px;
+    height: 500px;
+    float: right;
+
+}
+
+#linkfire-widget {
+    padding-top: 5%;
+    padding-left: 15%;
+    width: 500px;
+    height: 800px;
+    float: left;
 }
 
