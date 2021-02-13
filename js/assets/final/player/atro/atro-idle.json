@@ -1,0 +1,66 @@
+{ "frames": {
+   "Atro_Idle_Flat 0.aseprite": {
+    "frame": { "x": 0, "y": 0, "w": 47, "h": 68 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 47, "h": 68 },
+    "sourceSize": { "w": 47, "h": 68 },
+    "duration": 100
+   },
+   "Atro_Idle_Flat 1.aseprite": {
+    "frame": { "x": 47, "y": 0, "w": 47, "h": 68 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 47, "h": 68 },
+    "sourceSize": { "w": 47, "h": 68 },
+    "duration": 100
+   },
+   "Atro_Idle_Flat 2.aseprite": {
+    "frame": { "x": 94, "y": 0, "w": 47, "h": 68 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 47, "h": 68 },
+    "sourceSize": { "w": 47, "h": 68 },
+    "duration": 100
+   },
+   "Atro_Idle_Flat 3.aseprite": {
+    "frame": { "x": 141, "y": 0, "w": 47, "h": 68 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 47, "h": 68 },
+    "sourceSize": { "w": 47, "h": 68 },
+    "duration": 100
+   },
+   "Atro_Idle_Flat 4.aseprite": {
+    "frame": { "x": 188, "y": 0, "w": 47, "h": 68 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 47, "h": 68 },
+    "sourceSize": { "w": 47, "h": 68 },
+    "duration": 100
+   },
+   "Atro_Idle_Flat 5.aseprite": {
+    "frame": { "x": 235, "y": 0, "w": 47, "h": 68 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 47, "h": 68 },
+    "sourceSize": { "w": 47, "h": 68 },
+    "duration": 100
+   }
+ },
+ "meta": {
+  "app": "http://www.aseprite.org/",
+  "version": "1.2.25",
+  "image": "Atro_Idle_Flat.png",
+  "format": "RGBA8888",
+  "size": { "w": 282, "h": 68 },
+  "scale": "1",
+  "frameTags": [
+  ],
+  "layers": [
+   { "name": "Flattened", "opacity": 255, "blendMode": "normal" }
+  ],
+  "slices": [
+  ]
+ }
+}
