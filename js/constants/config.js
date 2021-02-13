@@ -4,5 +4,5 @@ export const BASESPEED = 0.1;
 export const SPEEDMODIFIER = 1.2;
 export const STAGELENGTH = 10;
 export const SPAWNCOOLDOWN = 5;
-export const NUMBEROFOBSTACLES = 4;
+export const NUMBEROFOBSTACLES = 5;
 

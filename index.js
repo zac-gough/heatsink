@@ -10,14 +10,14 @@ var gameScene = new GameScene;
 var gameOver = new GameOver;
 
 const config = {
-    width: WIDTH,
-    height: HEIGHT,
-   /*  scale: {
+    width: 800,
+    height: 300,
+    scale: {
         parent: 'game',
         mode: Phaser.Scale.FIT,
-        autoCenter: Phaser.Scale.CENTER_BOTH
+        autoCenter: 1
     },
-    autoRound: false,  */
+    autoRound: false,
     physics: { 
         default: 'arcade',
         arcade: {

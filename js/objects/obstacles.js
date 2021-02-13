@@ -2,11 +2,13 @@ import { WIDTH, HEIGHT} from '../constants/config.js';
 
 
 class Obstacle extends Phaser.Physics.Arcade.Sprite {
-    constructor(scene, x, y, texture, isAnimated) {
+    constructor(scene, x, y, texture, isAnimated, count) {
         super(scene, x, y, texture);
          
         this.texture = texture;
         this.isAnimated = isAnimated;
+        this.id = count;
+        this.setDepth(2);
         
      };
 

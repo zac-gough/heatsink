@@ -5,14 +5,15 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     constructor(scene, x, y, texture) {
         super(scene, x, y, texture);              
             this.texture = texture;
+            this.setDepth(2);
     };
 
-    initAnims() {
+    initAnims(frameRate) {
 
         this.scene.anims.create({
-            key: 'run',
+            key: this.texture,
             frames: this.scene.anims.generateFrameNumbers(this.texture, {start: 0, end: 5}),
-            frameRate: 15,
+            frameRate: frameRate,
             repeat: -1
         });   
     };

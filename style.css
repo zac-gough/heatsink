@@ -19,11 +19,6 @@ body {
     background-attachment: fixed;
 }
 
-.header {
-    width: 100%;
-    height: 80px;
-    display: block;
-}   
 
 #footer{
     position: fixed;
@@ -43,39 +38,36 @@ body {
     background-image: url("/assets/website-images/slimset-imbi.png");
 } */
 
-#heatsink-logo {
-    float: left;
-    width: 400px;
-    margin-left: 20px;
-    margin-top: 5px;
-}
-
-#artist-logo {
-    margin-top: 20px;
-    float: right;
-}
-
 #game {
+    margin: 0 auto;
     width: 800px;
     height: 300px;
-    margin: 0 auto;
-    margin-top: 100px;
+    padding-top: 50px;
+    max-width: 100%;
 }
+
+#row-2 {
+    margin: 0 auto;
+    width: 100%;
+
+}
+
+
 
 #cover-art{
     padding-top: 5%;
     padding-right: 15%;
-    width: 500px;
-    height: 500px;
+    width: 50%;
+    height: 50%;
     float: right;
-
+    max-width: 100%;
 }
 
 #linkfire-widget {
-    padding-top: 5%;
-    padding-left: 15%;
-    width: 500px;
-    height: 800px;
-    float: left;
+
+    max-width: 100%;
+    margin: 0 auto;
 }
+
+
 
